@@ -5,10 +5,9 @@
 import UIKit
 
 enum PaymentErrors: Error {
-    
+    case doesNotExist // Нет приложения в App Store
     case faceIdError   // Не сработал Face ID
     case insufficientFunds(underpayment: Int) // Не хватает денег на счету
-
 }
 
 struct Application {
@@ -17,26 +16,37 @@ struct Application {
 
 class AppStore {
     
-    let faceIdWrong = false
+    var games = [
+        "Minecraft": Application(price: 529),
+        "GTA: San Andreas": Application(price: 529),
+        "Monopoly": Application(price: 299),
+        "GTA: Vice City": Application(price: 379),
+        "Assasin's Creed": Application(price: 149)
+    ]
     
+    var faceIdWrong = false
     var balance = 0
     
-    func action (app: Application) throws {
+    func action (game: String) throws {
+        
+        guard let name = games[game] else {
+            throw PaymentErrors.doesNotExist
+        }
         
         guard faceIdWrong == false else {
             throw PaymentErrors.faceIdError
         }
         
-        guard app.price < balance else {
-            throw PaymentErrors.insufficientFunds(underpayment: app.price - balance)
+        guard name.price < balance else {
+            throw PaymentErrors.insufficientFunds(underpayment: name.price - balance)
         }
         
-        balance = self.balance - app.price
+        balance = self.balance - name.price
         
-        print("Покупка прошла успешно!")
+        print("Покупка \(game) прошла успешно!\nС карты списано: \(name.price) рублей.")
         
     }
-    
+
     func topUpBalance (sum: Int) {
         balance = self.balance + sum
         print("Баланс пополнен на \(sum) рублей.\nВаш остаток: \(balance) рублей.\n")
@@ -45,10 +55,12 @@ class AppStore {
 
 
 let buy = AppStore()
-buy.balance = 500
+buy.topUpBalance(sum: 1000)
 
 do {
-    try buy.action(app: .init(price: 150))
+    try buy.action(game: "GTA: San Andreas")
+} catch PaymentErrors.doesNotExist {
+    print("Приложения не существует.")
 } catch PaymentErrors.faceIdError {
     print("Ваше лицо не распознано")
 } catch PaymentErrors.insufficientFunds(let underpayment) {
@@ -58,7 +70,9 @@ do {
 print("Остаток на карте: \(buy.balance) рублей.\n")
 
 do {
-    try buy.action(app: .init(price: 700))
+    try buy.action(game: "Minecraft")
+} catch PaymentErrors.doesNotExist {
+    print("Приложения не существует.")
 } catch PaymentErrors.faceIdError {
     print("Ваше лицо не распознано")
 } catch PaymentErrors.insufficientFunds(let underpayment) {
@@ -68,10 +82,12 @@ do {
 
 print("Остаток на карте: \(buy.balance) рублей.\n")
 
-buy.topUpBalance(sum: 500)
+buy.topUpBalance(sum: 300)
 
 do {
-    try buy.action(app: .init(price: 700))
+    try buy.action(game: "Monopoly")
+} catch PaymentErrors.doesNotExist {
+    print("Приложения не существует.")
 } catch PaymentErrors.faceIdError {
     print("Ваше лицо не распознано")
 } catch PaymentErrors.insufficientFunds(let underpayment) {
@@ -79,3 +95,4 @@ do {
 }
 
 print("Остаток на карте: \(buy.balance) рублей.\n")
+
