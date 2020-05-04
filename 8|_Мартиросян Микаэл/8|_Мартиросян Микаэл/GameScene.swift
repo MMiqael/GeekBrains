@@ -141,13 +141,6 @@ class GameScene: SKScene {
         snake!.move()
     }
     
-    func restart() {
-        guard case let scene == scene else {
-            return
-        }
-    
-    }
-    
     //создаем яблоко в случайной точке сцены
     func createApple(){
         // Случайная точка на экране
@@ -181,14 +174,8 @@ extension GameScene: SKPhysicsContactDelegate {
             //создаем новое яблоко
             createApple()
         case CollisionCategories.EdgeBody: //проверяем что это стенка экрана
-            
-//            let edge = contact.bodyA.node is EdgeBody ? contact.bodyA.node : contact.bodyB.node
-            
-            break //соприкосновение со стеной будет домашним заданием
-        case CollisionCategories.Snake:
-//            let snakeBody = contact.bodyA.node is Snake ? contact.bodyA.node : contact.bodyB.node
-            restat()
-            break
+            self.removeAllChildren()
+            didMove(to: view!)
         default:
             break
         }

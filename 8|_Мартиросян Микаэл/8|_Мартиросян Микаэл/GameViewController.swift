@@ -10,6 +10,10 @@ import UIKit
 import SpriteKit
 import GameplayKit
 
+struct GameStatus {
+    var gameOver = false
+}
+
 class GameViewController: UIViewController {
 
     override func viewDidLoad() {
@@ -51,4 +55,5 @@ class GameViewController: UIViewController {
     override var prefersStatusBarHidden: Bool {
         return true
     }
+    
 }
